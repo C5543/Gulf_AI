@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+
+<html lang="ar" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>
+    سجلات مساعد كلية الخليج
+</title>
+
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #f2eee7;
+    font-family: Tahoma, Arial, sans-serif;
+    color: #193530;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.top {
+    background: #08695d;
+    color: #fff;
+    padding: 16px 22px;
+
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    position: sticky;
+    top: 0;
+
+    z-index: 5;
+}
+
+.top h1 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.spacer {
+    flex: 1;
+}
+
+.logout {
+    border:
+        1px solid rgba(255,255,255,.55);
+
+    background: transparent;
+
+    color: #fff;
+
+    border-radius: 8px;
+
+    padding: 8px 13px;
+
+    cursor: pointer;
+}
+
+.wrap {
+    max-width: 1500px;
+
+    margin: 0 auto;
+
+    padding: 18px;
+}
+
+
+/* Stats */
+
+.stats {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            4,
+            minmax(130px,1fr)
+        );
+
+    gap: 12px;
+
+    margin-bottom: 16px;
+}
+
+.stat {
+
+    background: #fff;
+
+    border-radius: 12px;
+
+    padding: 16px;
+
+    box-shadow:
+        0 2px 10px rgba(0,0,0,.05);
+}
+
+.stat b {
+
+    display: block;
+
+    font-size: 24px;
+
+    color: #087667;
+
+    margin-top: 5px;
+}
+
+.stat span {
+
+    font-size: 13px;
+
+    color: #6d7774;
+}
+
+
+/* Notice */
+
+.notice {
+
+    background: #fff4d7;
+
+    color: #755514;
+
+    padding: 15px;
+
+    border-radius: 12px;
+
+    margin-bottom: 16px;
+
+    line-height: 1.8;
+}
+
+
+/* Layout */
+
+.grid {
+
+    display: grid;
+
+    grid-template-columns:
+        370px minmax(0,1fr);
+
+    gap: 16px;
+
+    align-items: start;
+}
+
+
+.panel {
+
+    background: #fff;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 2px 12px rgba(0,0,0,.06);
+
+    overflow: hidden;
+}
+
+
+.panel-title {
+
+    padding: 15px 17px;
+
+    border-bottom:
+        1px solid #edf0ef;
+
+    font-weight: bold;
+}
+
+
+/* Search */
+
+.search {
+
+    padding: 12px;
+
+    border-bottom:
+        1px solid #edf0ef;
+
+    display: flex;
+
+    gap: 7px;
+}
+
+.search input {
+
+    min-width: 0;
+
+    flex: 1;
+
+    padding: 10px;
+
+    border:
+        1px solid #d5dddb;
+
+    border-radius: 8px;
+}
+
+.search button {
+
+    border: 0;
+
+    background: #087667;
+
+    color: #fff;
+
+    border-radius: 8px;
+
+    padding: 0 14px;
+
+    cursor: pointer;
+}
+
+
+/* Conversations */
+
+.list {
+
+    max-height:
+        calc(100vh - 260px);
+
+    overflow: auto;
+}
+
+.conversation {
+
+    display: block;
+
+    padding: 13px 15px;
+
+    border-bottom:
+        1px solid #edf0ef;
+}
+
+.conversation:hover,
+.conversation.active {
+
+    background: #ebf7f4;
+}
+
+.conversation-head {
+
+    display: flex;
+
+    gap: 8px;
+
+    justify-content:
+        space-between;
+}
+
+.conversation-name {
+
+    font-weight: bold;
+}
+
+.conversation-time {
+
+    font-size: 11px;
+
+    color: #79827f;
+
+    white-space: nowrap;
+}
+
+.conversation-meta,
+.conversation-preview {
+
+    font-size: 12px;
+
+    color: #6b7471;
+
+    margin-top: 6px;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+
+/* Badges */
+
+.badge {
+
+    display: inline-block;
+
+    border-radius: 20px;
+
+    padding: 3px 8px;
+
+    background: #edf2f1;
+
+    font-size: 11px;
+}
+
+.badge.open {
+
+    background: #e1f7ee;
+
+    color: #08724f;
+}
+
+.badge.closed {
+
+    background: #eee;
+
+    color: #666;
+}
+
+
+.empty {
+
+    padding: 35px;
+
+    text-align: center;
+
+    color: #7b8582;
+}
+
+
+/* Conversation details */
+
+.detail-head {
+
+    padding: 16px;
+
+    border-bottom:
+        1px solid #edf0ef;
+}
+
+.detail-head h2 {
+
+    font-size: 18px;
+
+    margin: 0 0 10px;
+}
+
+.detail-meta {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    font-size: 12px;
+
+    color: #5e6966;
+}
+
+
+.export {
+
+    display: inline-block;
+
+    margin-top: 12px;
+
+    background: #eef7f5;
+
+    color: #087667;
+
+    padding: 8px 11px;
+
+    border-radius: 8px;
+
+    font-size: 12px;
+
+    font-weight: bold;
+}
+
+
+/* Messages */
+
+.thread {
+
+    padding: 18px;
+
+    background: #f5f1ea;
+
+    min-height: 250px;
+
+    max-height: 620px;
+
+    overflow: auto;
+}
+
+
+.message {
+
+    max-width: 82%;
+
+    padding: 11px 13px;
+
+    margin: 0 0 12px;
+
+    border-radius: 11px;
+
+    line-height: 1.75;
+
+    white-space: pre-wrap;
+
+    word-break: break-word;
+
+    box-shadow:
+        0 1px 3px rgba(0,0,0,.07);
+}
+
+
+.message.user {
+
+    background: #d9fdd3;
+
+    margin-right: auto;
+}
+
+.message.assistant {
+
+    background: #fff;
+
+    margin-left: auto;
+}
+
+.message.system {
+
+    background: #e9f0ff;
+
+    margin-left: auto;
+}
+
+.message.error {
+
+    background: #ffe7e7;
+
+    color: #922;
+
+    margin-left: auto;
+}
+
+
+.message-foot {
+
+    display: flex;
+
+    gap: 8px;
+
+    justify-content:
+        space-between;
+
+    margin-top: 7px;
+
+    font-size: 10px;
+
+    color: #77817e;
+}
+
+
+/* Context */
+
+.context {
+
+    margin-top: 8px;
+
+    border-top:
+        1px dashed rgba(0,0,0,.15);
+
+    padding-top: 7px;
+}
+
+.context summary {
+
+    cursor: pointer;
+
+    font-size: 11px;
+}
+
+
+.context pre,
+.technical pre {
+
+    direction: ltr;
+
+    text-align: left;
+
+    white-space: pre-wrap;
+
+    word-break: break-word;
+
+    background: #14211f;
+
+    color: #d9f6ed;
+
+    padding: 12px;
+
+    border-radius: 8px;
+
+    max-height: 430px;
+
+    overflow: auto;
+
+    font:
+        12px/1.6 Consolas, monospace;
+}
+
+
+/* OpenAI technical requests */
+
+.technical {
+
+    padding: 16px;
+
+    border-top:
+        1px solid #edf0ef;
+}
+
+
+.technical h3 {
+
+    font-size: 16px;
+
+    margin: 0 0 12px;
+}
+
+
+.api-call {
+
+    border:
+        1px solid #dce5e2;
+
+    border-radius: 10px;
+
+    margin-bottom: 10px;
+
+    overflow: hidden;
+}
+
+
+.api-call > summary {
+
+    cursor: pointer;
+
+    padding: 12px;
+
+    background: #f7faf9;
+
+    font-weight: bold;
+}
+
+
+.api-meta {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    padding: 10px 12px;
+
+    font-size: 12px;
+
+    color: #65706d;
+}
+
+
+.api-body {
+
+    padding:
+        0 12px 12px;
+}
+
+
+.api-body h4 {
+
+    margin: 10px 0 6px;
+
+    font-size: 13px;
+}
+
+
+@media(max-width:900px) {
+
+    .stats {
+
+        grid-template-columns:
+            repeat(2,1fr);
+    }
+
+    .grid {
+
+        grid-template-columns:
+            1fr;
+    }
+
+    .list {
+
+        max-height: 360px;
+    }
+
+    .thread {
+
+        max-height: none;
+    }
+
+    .message {
+
+        max-width: 94%;
+    }
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="top">
+
+    <h1>
+        سجلات مساعد كلية الخليج
+    </h1>
+
+    <div class="spacer"></div>
+
+
+    <form
+        method="post"
+        action="/logs/logout"
+    >
+
+        <button
+            class="logout"
+            type="submit"
+        >
+            تسجيل الخروج
+        </button>
+
+    </form>
+
+</header>
+
+
+<main class="wrap">
+
+
+{% if not tables_ready %}
+
+<div class="notice">
+
+    جداول السجلات غير موجودة حتى الآن.
+    افتحي صفحة المساعد وأرسلي أول رسالة؛
+    سيُنشئها النظام تلقائيًا،
+    ثم حدّثي هذه الصفحة.
+
+</div>
+
+{% endif %}
+
+
+
+<section class="stats">
+
+    <div class="stat">
+
+        <span>
+            المحادثات
+        </span>
+
+        <b>
+            {{ stats.conversations }}
+        </b>
+
+    </div>
+
+
+    <div class="stat">
+
+        <span>
+            الرسائل
+        </span>
+
+        <b>
+            {{ stats.messages }}
+        </b>
+
+    </div>
+
+
+    <div class="stat">
+
+        <span>
+            الأخطاء المسجلة
+        </span>
+
+        <b>
+            {{ stats.errors }}
+        </b>
+
+    </div>
+
+
+    <div class="stat">
+
+        <span>
+            إجمالي التوكنات
+        </span>
+
+        <b>
+            {{ stats.tokens }}
+        </b>
+
+    </div>
+
+</section>
+
+
+
+<section class="grid">
+
+
+<!-- Conversation list -->
+
+<aside class="panel">
+
+    <div class="panel-title">
+        كل المحادثات
+    </div>
+
+
+    <form
+        class="search"
+        method="get"
+        action="/logs"
+    >
+
+        <input
+            type="search"
+            name="q"
+            value="{{ search }}"
+            placeholder="اسم، رقم جامعي أو نص رسالة"
+        >
+
+        <button type="submit">
+            بحث
+        </button>
+
+    </form>
+
+
+    <div class="list">
+
+
+    {% if not conversations %}
+
+        <div class="empty">
+            ما توجد محادثات مطابقة.
+        </div>
+
+
+    {% else %}
+
+
+        {% for item in conversations %}
+
+
+            <a
+                class="
+                    conversation
+                    {% if conversation_id == item.id %}
+                    active
+                    {% endif %}
+                "
+
+                href="
+                    /logs?conversation={{ item.id }}
+                    {% if search %}
+                    &q={{ search }}
+                    {% endif %}
+                "
+            >
+
+
+                <div class="conversation-head">
+
+                    <span class="conversation-name">
+
+                        {% if item.visitor_name %}
+
+                            {{ item.visitor_name }}
+
+                        {% else %}
+
+                            زائر غير معروف
+
+                        {% endif %}
+
+                    </span>
+
+
+                    <span class="conversation-time">
+
+                        {{ item.last_message_at }}
+
+                    </span>
+
+                </div>
+
+
+                <div class="conversation-meta">
+
+
+                    {% if item.student_id %}
+
+                        الرقم الجامعي:
+                        {{ item.student_id }}
+
+                        ·
+
+                    {% endif %}
+
+
+                    <span
+                        class="
+                            badge
+                            {{ item.status }}
+                        "
+                    >
+
+                        {% if item.status == "closed" %}
+
+                            منتهية
+
+                        {% else %}
+
+                            مفتوحة
+
+                        {% endif %}
+
+                    </span>
+
+
+                    ·
+
+                    {{ item.message_count }}
+
+                    رسالة
+
+                </div>
+
+
+                <div class="conversation-preview">
+
+                    {{ item.last_message or "" }}
+
+                </div>
+
+
+            </a>
+
+
+        {% endfor %}
+
+
+    {% endif %}
+
+
+    </div>
+
+</aside>
+
+
+
+<!-- Selected conversation -->
+
+<section class="panel">
+
+
+{% if not selected_conversation %}
+
+
+    <div class="empty">
+
+        اختاري محادثة من القائمة
+        حتى تظهر لك كاملة.
+
+    </div>
+
+
+{% else %}
+
+
+    <div class="detail-head">
+
+
+        <h2>
+
+            {% if selected_conversation.visitor_name %}
+
+                {{ selected_conversation.visitor_name }}
+
+            {% else %}
+
+                زائر غير معروف
+
+            {% endif %}
+
+        </h2>
+
+
+        <div class="detail-meta">
+
+
+            <span>
+
+                رقم المحادثة:
+                {{ selected_conversation.id }}
+
+            </span>
+
+
+            {% if selected_conversation.student_id %}
+
+            <span>
+
+                · الرقم الجامعي:
+                {{ selected_conversation.student_id }}
+
+            </span>
+
+            {% endif %}
+
+
+            {% if selected_conversation.identity_masked %}
+
+            <span>
+
+                · الهوية:
+                {{ selected_conversation.identity_masked }}
+
+            </span>
+
+            {% endif %}
+
+
+            <span>
+
+                · IP:
+                {{ selected_conversation.last_ip }}
+
+            </span>
+
+
+            <span>
+
+                · بدأت:
+                {{ selected_conversation.started_at }}
+
+            </span>
+
+
+        </div>
+
+
+        <a
+            class="export"
+            href="/logs/export/{{ selected_conversation.id }}"
+        >
+
+            تنزيل المحادثة JSON
+
+        </a>
+
+
+    </div>
+
+
+
+    <div class="thread">
+
+
+        {% for item in messages %}
+
+
+            <div
+                class="
+                    message
+                    {{ item.direction }}
+                "
+            >
+
+
+                {{ item.message_text }}
+
+
+                {% if item.context_json %}
+
+                <details class="context">
+
+                    <summary>
+                        السياق المسجل مع الرسالة
+                    </summary>
+
+                    <pre>{{ item.pretty_context }}</pre>
+
+                </details>
+
+                {% endif %}
+
+
+                <div class="message-foot">
+
+
+                    <span>
+
+                        {{ direction_label(item.direction) }}
+
+                        ·
+
+                        {{ item.handler }}
+
+                    </span>
+
+
+                    <span>
+
+                        {{ item.created_at }}
+
+
+                        {% if item.latency_ms is not none %}
+
+                            ·
+                            {{ item.latency_ms }}ms
+
+                        {% endif %}
+
+                    </span>
+
+
+                </div>
+
+
+            </div>
+
+
+        {% endfor %}
+
+
+    </div>
+
+
+
+    <div class="technical">
+
+
+        <h3>
+            الطلبات التقنية المرسلة إلى OpenAI
+        </h3>
+
+
+        {% if not api_calls %}
+
+
+            <div class="empty">
+
+                هذه المحادثة لم تحتج اتصالًا
+                بـ OpenAI،
+                وتم الرد عليها من قواعد
+                النظام المباشرة.
+
+            </div>
+
+
+        {% else %}
+
+
+            {% for call in api_calls %}
+
+
+                <details class="api-call">
+
+
+                    <summary>
+
+                        {{ call.purpose }}
+
+                        ·
+
+                        {{ call.model }}
+
+                        · HTTP
+
+                        {{ call.http_code }}
+
+                    </summary>
+
+
+                    <div class="api-meta">
+
+                        <span>
+                            {{ call.created_at }}
+                        </span>
+
+                        <span>
+                            المدة:
+                            {{ call.duration_ms }}ms
+                        </span>
+
+                        <span>
+                            Input:
+                            {{ call.input_tokens }}
+                        </span>
+
+                        <span>
+                            Output:
+                            {{ call.output_tokens }}
+                        </span>
+
+                        <span>
+                            Total:
+                            {{ call.total_tokens }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="api-body">
+
+
+                        {% if call.curl_error %}
+
+                            <div class="notice">
+                                {{ call.curl_error }}
+                            </div>
+
+                        {% endif %}
+
+
+                        <h4>
+                            الطلب المرسل
+                        </h4>
+
+                        <pre>{{ call.pretty_request }}</pre>
+
+
+                        <h4>
+                            الرد الخام
+                        </h4>
+
+                        <pre>{{ call.pretty_response }}</pre>
+
+
+                    </div>
+
+
+                </details>
+
+
+            {% endfor %}
+
+
+        {% endif %}
+
+
+    </div>
+
+
+{% endif %}
+
+
+</section>
+
+
+</section>
+
+
+</main>
+
+
+</body>
+
+</html>

@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>مساعد كلية الخليج</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Tahoma, Arial, sans-serif;
+            background: #efeae2;
+            height: 100vh;
+        }
+
+        .chat {
+            max-width: 700px;
+            height: 100vh;
+            margin: auto;
+            background: #efeae2;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .header {
+            background: #075e54;
+            color: white;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 44px;
+            height: 44px;
+            background: white;
+            color: #075e54;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .header-info {
+            flex: 1;
+        }
+
+        .header-info h3 {
+            margin: 0 0 4px;
+            font-size: 16px;
+        }
+
+        .header-info span {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .header-button {
+            border: 1px solid rgba(255, 255, 255, 0.55);
+            color: white;
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
+            padding: 7px 10px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 12px;
+        }
+
+        .header-button:disabled {
+            opacity: 0.55;
+            cursor: default;
+        }
+
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 14px;
+        }
+
+        .message {
+            max-width: 82%;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            line-height: 1.7;
+            font-size: 14px;
+            white-space: pre-wrap;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+        }
+
+        .bot {
+            background: white;
+            margin-left: auto;
+            border-top-right-radius: 3px;
+        }
+
+        .user {
+            background: #d9fdd3;
+            margin-right: auto;
+            border-top-left-radius: 3px;
+        }
+
+        .time {
+            display: block;
+            font-size: 10px;
+            color: #777;
+            margin-top: 4px;
+            text-align: left;
+        }
+
+        .message-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-top: 10px;
+        }
+
+        .message-action {
+            display: inline-block;
+            background: #087f72;
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 13px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .ticket-cancel {
+            background: #777;
+        }
+
+        .typing {
+            display: none;
+            background: white;
+            width: fit-content;
+            padding: 10px 14px;
+            border-radius: 10px;
+            margin-left: auto;
+            color: #777;
+            font-size: 13px;
+        }
+
+        .input-area {
+            background: #f0f2f5;
+            padding: 10px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .input-area textarea {
+            flex: 1;
+            border: none;
+            outline: none;
+            resize: none;
+            border-radius: 22px;
+            padding: 12px 15px;
+            font-family: inherit;
+            font-size: 14px;
+            height: 44px;
+            max-height: 110px;
+        }
+
+        .send {
+            border: none;
+            background: #00a884;
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .send:disabled {
+            opacity: 0.5;
+            cursor: default;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="chat">
+
+    <div class="header">
+
+        <div class="avatar">
+            G
+        </div>
+
+        <div class="header-info">
+            <h3>مساعد كلية الخليج</h3>
+            <span id="status">جاري التجهيز...</span>
+        </div>
+
+        <div class="header-buttons">
+
+            <button
+                class="header-button"
+                id="newChatBtn"
+                type="button"
+                onclick="startNewChat()"
+            >
+                محادثة جديدة
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="messages" id="messages">
+
+        <div class="typing" id="typing">
+            جاري كتابة الرد...
+        </div>
+
+    </div>
+
+
+    <div class="input-area">
+
+        <textarea
+            id="message"
+            placeholder="اكتب رسالتك..."
+            onkeydown="handleKey(event)"
+            disabled
+        ></textarea>
+
+        <button
+            class="send"
+            id="sendBtn"
+            onclick="sendMessage()"
+            disabled
+        >
+            ➤
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const API_BASE = window.location.origin;
+
+const CHAT_API =
+    API_BASE + '/chat';
+
+const TICKET_API =
+    API_BASE + '/create-ticket';
+
+
+let busy = false;
+let conversationClosed = false;
+let demoMode = false;
+let demoStage = 'waiting_name';
+let demoUserName = '';
+
+let ticketStage = 'normal';
+
+let ticketTitle = '';
+
+let ticketMessage = '';
+
+let ticketPromptVisible = false;
+
+let inactivityTimer = null;
+
+const INACTIVITY_TIME = 2 * 60 * 1000;
+
+
+const demoStudentName =
+    'مستخدم تجريبي';
+
+const demoStudentId =
+    'LOCAL-DEMO';
+
+
+const welcomeText =
+    'حياك الله في كلية الخليج، ممكن أعرف اسمك؟';
+
+
+function getTime() {
+
+    return new Date().toLocaleTimeString(
+        'ar-SA',
+        {
+            hour: '2-digit',
+            minute: '2-digit'
+        }
+    );
+}
+
+
+function addMessage(text, type, actions) {
+
+    const messages =
+        document.getElementById('messages');
+
+    const div =
+        document.createElement('div');
+
+    div.className =
+        'message ' + type;
+
+    div.appendChild(
+        document.createTextNode(text)
+    );
+
+
+    if (
+        Array.isArray(actions) &&
+        actions.length
+    ) {
+
+        const actionsBox =
+            document.createElement('div');
+
+        actionsBox.className =
+            'message-actions';
+
+
+        actions.forEach(function(action) {
+
+            if (
+                !action ||
+                !action.label ||
+                !action.url
+            ) {
+                return;
+            }
+
+
+            const link =
+                document.createElement('a');
+
+            link.className =
+                'message-action';
+
+            link.textContent =
+                action.label;
+
+
+            if (
+                action.url.startsWith('/')
+            ) {
+
+                link.href =
+                    API_BASE + action.url;
+
+            } else {
+
+                link.href =
+                    action.url;
+            }
+
+
+            actionsBox.appendChild(link);
+        });
+
+
+        div.appendChild(actionsBox);
+    }
+
+
+    const time =
+        document.createElement('span');
+
+    time.className =
+        'time';
+
+    time.textContent =
+        getTime();
+
+    div.appendChild(time);
+
+
+    messages.insertBefore(
+        div,
+        document.getElementById('typing')
+    );
+
+
+    messages.scrollTop =
+        messages.scrollHeight;
+}
+
+
+function addTicketButtons() {
+
+    if (ticketPromptVisible) {
+        return;
+    }
+
+    ticketPromptVisible = true;
+
+    const messages =
+        document.getElementById('messages');
+
+    const box =
+        document.createElement('div');
+
+    box.className =
+        'message bot';
+
+
+    const text =
+        document.createElement('div');
+
+    text.textContent =
+        'ما قدرت أوفر لك حل دقيق لهذه المشكلة. هل ترغب برفع تذكرة للدعم؟';
+
+    box.appendChild(text);
+
+
+    const actions =
+        document.createElement('div');
+
+    actions.className =
+        'message-actions';
+
+
+    const yes =
+        document.createElement('button');
+
+    yes.className =
+        'message-action';
+
+    yes.textContent =
+        'نعم، ارفع تذكرة';
+
+    yes.onclick =
+        function() {
+
+            box.remove();
+
+            ticketPromptVisible = false;
+
+            ticketStage =
+                'waiting_title';
+
+            addMessage(
+                'تمام، اكتب عنوان التذكرة.',
+                'bot'
+            );
+
+            document
+                .getElementById('message')
+                .focus();
+        };
+
+
+    const no =
+        document.createElement('button');
+
+    no.className =
+        'message-action ticket-cancel';
+
+    no.textContent =
+        'إلغاء';
+
+    no.onclick =
+        function() {
+
+            box.remove();
+
+            ticketPromptVisible = false;
+
+            ticketStage =
+                'normal';
+
+            addMessage(
+                'تمام، إذا احتجت أي مساعدة ثانية أنا موجود.',
+                'bot'
+            );
+        };
+
+
+    actions.appendChild(yes);
+    actions.appendChild(no);
+
+    box.appendChild(actions);
+
+
+    const time =
+        document.createElement('span');
+
+    time.className =
+        'time';
+
+    time.textContent =
+        getTime();
+
+    box.appendChild(time);
+
+
+    messages.insertBefore(
+        box,
+        document.getElementById('typing')
+    );
+
+    messages.scrollTop =
+        messages.scrollHeight;
+}
+
+
+function startTicket() {
+
+    if (
+        ticketStage !== 'normal'
+    ) {
+        return;
+    }
+
+
+    ticketStage =
+        'waiting_title';
+
+
+    addMessage(
+        'تمام، اكتب عنوان التذكرة.',
+        'bot'
+    );
+
+
+    document
+        .getElementById('message')
+        .focus();
+}
+
+
+async function createTicket() {
+
+    const typing =
+        document.getElementById('typing');
+
+    typing.style.display =
+        'block';
+
+
+    try {
+
+        const response =
+            await fetch(
+                TICKET_API,
+                {
+                    method: 'POST',
+
+                    headers: {
+                        'Content-Type':
+                            'application/json'
+                    },
+
+                    body: JSON.stringify({
+
+                        title:
+                            ticketTitle,
+
+                        message:
+                            ticketMessage,
+
+                        user_name:
+                            demoStudentName,
+
+                        student_id:
+                            demoStudentId
+                    })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        typing.style.display =
+            'none';
+
+
+        if (
+            response.ok &&
+            data.success &&
+            data.ticket
+        ) {
+
+            addMessage(
+                'تم رفع تذكرتك للدعم الفني بنجاح ✅\n\n'
+                + 'رقم التذكرة: '
+                + data.ticket.ticket_id
+                + '\n'
+                + 'العنوان: '
+                + data.ticket.title
+                + '\n'
+                + 'الحالة: مفتوحة',
+                'bot'
+            );
+
+        } else {
+
+            addMessage(
+                'تعذر رفع التذكرة حالياً، حاول مرة ثانية.',
+                'bot'
+            );
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        typing.style.display =
+            'none';
+
+        addMessage(
+            'صار خطأ أثناء الاتصال بخدمة التذاكر.',
+            'bot'
+        );
+    }
+
+
+    ticketStage =
+        'normal';
+
+    ticketTitle =
+        '';
+
+    ticketMessage =
+        '';
+
+    ticketPromptVisible =
+        false;
+}
+
+
+function clearVisibleMessages() {
+
+    const messages =
+        document.getElementById('messages');
+
+    messages
+        .querySelectorAll('.message')
+        .forEach(function(item) {
+
+            item.remove();
+
+        });
+}
+
+
+function setReady(ready) {
+
+    document
+        .getElementById('message')
+        .disabled =
+        !ready;
+
+    document
+        .getElementById('sendBtn')
+        .disabled =
+        !ready;
+
+    document
+        .getElementById('newChatBtn')
+        .disabled =
+        !ready;
+}
+
+
+async function resetServerSession() {
+
+    const response =
+        await fetch(
+            CHAT_API,
+            {
+                method: 'POST',
+
+                headers: {
+                    'Content-Type':
+                        'application/json'
+                },
+
+                cache:
+                    'no-store',
+
+                credentials:
+                    'include',
+
+                body: JSON.stringify({
+                    action: 'reset'
+                })
+            }
+        );
+
+
+    const data =
+        await response.json();
+
+
+    if (
+        !response.ok ||
+        !data.success ||
+        !data.reset
+    ) {
+
+        throw new Error(
+            'تعذر تصفير المحادثة'
+        );
+    }
+
+
+    return data;
+}
+
+
+async function startNewChat() {
+
+    conversationClosed = false;
+resetInactivityTimer();
+
+    if (busy) {
+        return;
+    }
+
+
+    busy =
+        true;
+
+    setReady(false);
+
+
+    if (demoMode) {
+
+        clearVisibleMessages();
+
+        ticketStage =
+            'normal';
+
+        ticketTitle =
+            '';
+
+        ticketMessage =
+            '';
+
+        ticketPromptVisible =
+            false;
+
+            demoStage = 
+            'waiting_name';
+
+            demoUserName =
+             '';
+
+        addMessage(
+            welcomeText,
+            'bot'
+        );
+
+
+        document
+            .getElementById('status')
+            .textContent =
+            'متصل الآن';
+
+        setReady(true);
+
+        busy =
+            false;
+
+        return;
+    }
+
+
+    try {
+
+        await resetServerSession();
+
+        clearVisibleMessages();
+
+        ticketStage =
+            'normal';
+
+        ticketTitle =
+            '';
+
+        ticketMessage =
+            '';
+
+        ticketPromptVisible =
+            false;
+
+        addMessage(
+            welcomeText,
+            'bot'
+        );
+
+        document
+            .getElementById('status')
+            .textContent =
+            'متصل الآن';
+
+        setReady(true);
+
+    } catch (error) {
+
+        console.error(error);
+
+        activateDemoMode();
+    }
+
+
+    busy =
+        false;
+}
+
+
+function activateDemoMode() {
+
+    demoMode =
+        true;
+
+    clearVisibleMessages();
+
+    ticketPromptVisible =
+        false;
+
+
+    addMessage(
+        welcomeText,
+        'bot'
+    );
+
+
+    document
+        .getElementById('status')
+        .textContent =
+        'متصل الآن';
+
+
+    setReady(true);
+
+
+    document
+        .getElementById('message')
+        .focus();
+}
+
+
+async function restoreConversation() {
+
+    if (busy) {
+        return;
+    }
+
+
+    busy =
+        true;
+
+    setReady(false);
+
+
+    try {
+
+        const response =
+            await fetch(
+                CHAT_API,
+                {
+                    method: 'POST',
+
+                    headers: {
+                        'Content-Type':
+                            'application/json'
+                    },
+
+                    cache:
+                        'no-store',
+
+                    credentials:
+                        'include',
+
+                    body: JSON.stringify({
+                        action: 'history'
+                    })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            throw new Error(
+                'تعذر استعادة المحادثة'
+            );
+        }
+
+
+        clearVisibleMessages();
+
+
+        if (
+            Array.isArray(data.history) &&
+            data.history.length
+        ) {
+
+            data.history.forEach(
+                function(item) {
+
+                    if (
+                        !item ||
+                        !item.text
+                    ) {
+                        return;
+                    }
+
+
+                    addMessage(
+                        item.text,
+
+                        item.type === 'user'
+                            ? 'user'
+                            : 'bot',
+
+                        item.actions || []
+                    );
+                }
+            );
+
+        } else {
+
+            await resetServerSession();
+
+            addMessage(
+                welcomeText,
+                'bot'
+            );
+        }
+
+
+        document
+            .getElementById('status')
+            .textContent =
+            'متصل الآن';
+
+
+        setReady(true);
+
+    } catch (error) {
+
+        console.error(error);
+
+        activateDemoMode();
+    }
+
+
+    busy =
+        false;
+}
+
+
+async function sendMessage() {
+
+    if (busy) {
+        return;
+    }
+
+
+    const input =
+        document.getElementById('message');
+
+    const sendBtn =
+        document.getElementById('sendBtn');
+
+    const typing =
+        document.getElementById('typing');
+
+    const status =
+        document.getElementById('status');
+
+
+    const message =
+        input.value.trim();
+
+
+    if (!message) {
+        return;
+    }
+
+
+    addMessage(
+        message,
+        'user'
+    );
+
+
+    input.value =
+        '';
+
+
+    if (
+        ticketStage ===
+        'waiting_title'
+    ) {
+
+        ticketTitle =
+            message;
+
+        ticketStage =
+            'waiting_details';
+
+
+        addMessage(
+            'ممتاز، الآن اشرح المشكلة بالتفصيل.',
+            'bot'
+        );
+
+        return;
+    }
+
+
+    if (
+        ticketStage ===
+        'waiting_details'
+    ) {
+
+        ticketMessage =
+            message;
+
+        ticketStage =
+            'creating';
+
+
+        addMessage(
+            'جاري رفع التذكرة للدعم الفني...',
+            'bot'
+        );
+
+
+        await createTicket();
+
+        return;
+    }
+
+
+   if (demoMode) {
+
+    if (demoStage === 'waiting_name') {
+
+        demoUserName = message;
+
+        demoStage = 'ready';
+
+        setTimeout(
+            function() {
+
+                addMessage(
+                    'أهلين أستاذة ' + demoUserName +
+                    '، الله يسعدك، كيف أقدر أخدمك؟',
+                    'bot'
+                );
+
+            },
+            400
+        );
+
+        return;
+    }
+
+
+    setTimeout(
+        function() {
+
+            addTicketButtons();
+
+        },
+        400
+    );
+
+    return;
+}
+
+
+    busy =
+        true;
+
+    sendBtn.disabled =
+        true;
+
+    typing.style.display =
+        'block';
+
+    status.textContent =
+        'يكتب...';
+
+
+    try {
+
+        const response =
+            await fetch(
+                CHAT_API,
+                {
+                    method: 'POST',
+
+                    headers: {
+                        'Content-Type':
+                            'application/json'
+                    },
+
+                    cache:
+                        'no-store',
+
+                    credentials:
+                        'include',
+
+                    body: JSON.stringify({
+                        message: message
+                    })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        typing.style.display =
+            'none';
+
+
+        if (
+            response.ok &&
+            data.success
+        ) {
+
+            addMessage(
+                data.reply,
+                'bot',
+                data.actions || []
+            );
+
+        } else {
+
+            addTicketButtons();
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        typing.style.display =
+            'none';
+
+        addTicketButtons();
+    }
+
+
+    busy =
+        false;
+
+    sendBtn.disabled =
+        false;
+
+    status.textContent =
+        'متصل الآن';
+
+    input.focus();
+}
+
+function resetInactivityTimer() {
+
+    if (conversationClosed) {
+        return;
+    }
+
+    clearTimeout(inactivityTimer);
+
+    inactivityTimer = setTimeout(
+        showClosingMessage,
+        INACTIVITY_TIME
+    );
+}
+
+
+async function showClosingMessage() {
+     if (conversationClosed) {
+        return;
+    }
+
+    conversationClosed = true;
+
+
+    try {
+
+        const response =
+            await fetch(
+                API_BASE + '/closing-message'
+            );
+
+        const data =
+            await response.json();
+
+
+        if (
+            response.ok &&
+            data.success
+        ) {
+
+            const actions = [];
+
+            if (data.social_links) {
+
+                if (data.social_links.whatsapp) {
+                    actions.push({
+                        label: 'WhatsApp',
+                        url: data.social_links.whatsapp
+                    });
+                }
+
+                if (data.social_links.x) {
+                    actions.push({
+                        label: 'X',
+                        url: data.social_links.x
+                    });
+                }
+
+                if (data.social_links.linkedin) {
+                    actions.push({
+                        label: 'LinkedIn',
+                        url: data.social_links.linkedin
+                    });
+                }
+            }
+
+
+            addMessage(
+                data.reply,
+                'bot',
+                actions
+            );
+        }
+
+    } catch (error) {
+
+        console.error(
+            'Closing message error:',
+            error
+        );
+    }
+}
+
+function handleKey(event) {
+
+    if (
+        event.key === 'Enter' &&
+        !event.shiftKey
+    ) {
+
+        event.preventDefault();
+
+        sendMessage();
+    }
+}
+
+
+document.addEventListener(
+    'DOMContentLoaded',
+    function() {
+
+        restoreConversation();
+
+        resetInactivityTimer();
+
+
+        document
+            .getElementById('message')
+            .addEventListener(
+                'input',
+                resetInactivityTimer
+            );
+
+
+        document.addEventListener(
+            'click',
+            resetInactivityTimer
+        );
+    }
+);
+</script>
+
+</body>
+</html>

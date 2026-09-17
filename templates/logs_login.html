@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+
+<html lang="ar" dir="rtl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        سجلات مساعد كلية الخليج
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f4f1eb;
+            font-family: Tahoma, Arial, sans-serif;
+            color: #17332e;
+        }
+
+        .login {
+            max-width: 460px;
+            margin: 12vh auto;
+            background: #fff;
+            border-radius: 18px;
+            padding: 28px;
+            box-shadow:
+                0 14px 45px rgba(0,0,0,.1);
+        }
+
+        h1 {
+            font-size: 23px;
+            margin: 0 0 8px;
+        }
+
+        .muted {
+            color: #6d7774;
+            line-height: 1.8;
+            font-size: 14px;
+        }
+
+        .error {
+            background: #fff0f0;
+            color: #a12a2a;
+            padding: 12px;
+            border-radius: 10px;
+            margin: 14px 0;
+        }
+
+        label {
+            display: block;
+            margin: 22px 0 8px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #ccd7d4;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            border: 0;
+            border-radius: 10px;
+            background: #087667;
+            color: #fff;
+            padding: 13px;
+            margin-top: 14px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="login">
+
+    <h1>
+        سجلات مساعد كلية الخليج
+    </h1>
+
+    <div class="muted">
+        هذه الصفحة خاصة بالمشرف
+        وتعرض محادثات بيئة الاختبار.
+    </div>
+
+
+    {% if error %}
+
+        <div class="error">
+            {{ error }}
+        </div>
+
+    {% endif %}
+
+
+    <form
+        method="post"
+        action="/logs/login"
+        autocomplete="off"
+    >
+
+        <label for="view_key">
+            كلمة مرور السجلات
+        </label>
+
+        <input
+            id="view_key"
+            name="view_key"
+            type="password"
+            required
+            autofocus
+        >
+
+        <button type="submit">
+            دخول
+        </button>
+
+    </form>
+
+</div>
+
+</body>
+
+</html>
